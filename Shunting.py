@@ -8,11 +8,10 @@ OpInfo = namedtuple('OpInfo', 'prec assoc')
 L, R = 'Left Right'.split()
  
 ops = {
- '^': OpInfo(prec=4, assoc=R),
- '*': OpInfo(prec=3, assoc=L),
- '/': OpInfo(prec=3, assoc=L),
- '+': OpInfo(prec=2, assoc=L),
- '-': OpInfo(prec=2, assoc=L),
+ '!': OpInfo(prec=4, assoc=R),
+ '^': OpInfo(prec=1, assoc=L),
+ '+': OpInfo(prec=3, assoc=L),
+ '|': OpInfo(prec=2, assoc=L),
  '(': OpInfo(prec=9, assoc=L),
  ')': OpInfo(prec=0, assoc=L),
  }

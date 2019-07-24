@@ -40,29 +40,41 @@ class Inputs:
         self.multi_rules = dict()
         self.queries = []
         self.entries = []
-        self.read = {
-                "nodes":False,
-                "multi_rules":False,
-                "queries":False,
-                "entries":False,
-                }
+        self.current = "rules"
 
     def take_entries(self, line):
+        if self.current != "rules":
+            if self.current == "entries":
+                msg = "Only one line for initial facts allowed"
+            else:
+                msg = "You cannot insert initial facts here, respect the order : " \
+                        + "Rules => Initial facts => Queries"
+            errors.parse(self.line, msg)
         if not is_upper(line):
-            errors.parse(self.line, "Entry not well formated, only upper-case alphabetical characters allowed")
-        if self.read["entries"]:
-            errors.parse(self.line, "Only one line for initial facts allowed")
+            errors.parse(self.line, "Initial facts not well formated, only upper-case " \
+                    + "alphabetical characters allowed")
         for c in line:
             self.entries.append(c)
+        self.current = "entries"
 
     def take_queries(self, line):
+        if self.current != "entries":
+            if self.current == "queries":
+                msg = "Only one line for querys allowed"
+            else:
+                msg = "You cannot insert queries here, respect the order : " \
+                        + "Rules => Initial facts => Queries"
+            errors.parse(self.line, msg)
         if not is_maj(line):
-            print("Query not well formated")
-            exit()
+            errors.parse(self.line, "Query not well formated, only upper-case alphabetical characters allowed")
         for c in line:
             self.queries.append(c)
+        self.current = "queries"
     
     def take_rules(self, line):
+        if self.current != "rules":
+            errors.parse(self.line, "You cannot insert a rule here, respect the order : " \
+                    + "Rules => Initial facts => Queries")
         return None
 
     def parsing(self, content):

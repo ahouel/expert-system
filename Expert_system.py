@@ -9,7 +9,5 @@ if len(av) != 2:
 content = parsing.file_opener(av[1])
 if content is "":
     errors.empty(av[1])
-print(content)
 inputs = parsing.Inputs()
 inputs.parsing(content)
-print(inputs.entries)

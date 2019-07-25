@@ -38,8 +38,8 @@ def fix_input(inp = None):
 def get_input(inp = None):
     'Inputs an expression and returns list of (TOKENTYPE, tokenvalue)'
     
-    if inp is not None:
-        fix_input(inp)
+#    if inp is not None:
+#        fix_input(inp)
     if inp is None:
         inp = input('expression: ')
     tokens = inp.strip().split()
@@ -112,7 +112,7 @@ def shunting(tokenvals):
  
 if __name__ == '__main__':
     infix = '3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3'
-    if len(av) > 0:
+    if len(av) > 1:
         infix = av[1]
     print( 'For infix expression: %r\n' % infix )
     rp = shunting(get_input(infix))

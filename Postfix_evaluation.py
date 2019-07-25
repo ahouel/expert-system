@@ -31,4 +31,4 @@ def eval_postfix(expr):
     return stack.pop()
 
 
-print(eval_postfix("1 2 3 4 * + * 9 +"))
+print(eval_postfix("5 9 5 + +"))

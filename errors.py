@@ -10,7 +10,7 @@ def usage():
 
 def file_fail(file_name, message):
     print(colors.red + "Problem with the file : " + colors.blue + file_name \
-            + colors.normal + message)
+            + colors.normal + " " + message)
     exit()
 
 def empty(file_name):

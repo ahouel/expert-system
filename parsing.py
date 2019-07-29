@@ -1,14 +1,11 @@
 #!/usr/bin/Python3.4
 
 import errors
-
-
-
-#
-#   Try to open the file, takes it's name and return it's content as a string
-#
+import Shunting as rpn
 
 def file_opener(name):
+    'Try to open the file, takes it\'s name and return it\'s content as a string'
+
     if name is None:
         return None
     try:
@@ -22,11 +19,9 @@ def file_opener(name):
     else:
         errors.file_fail(name, "couldn't read")
 
-#
-#   Check if a string / character is caps return true if it is
-#
-
 def is_upper(c):
+    'Check if a string / character is upper alphabetical value'
+    
     if type(c) is chr:
         ascii_val = ord(c)
         if ascii_val < 65 or ascii_val > 90:
@@ -39,11 +34,9 @@ def is_upper(c):
                 return False
         return True
 
-#
-#   The function below checks if parentheses are correctly closed
-#
-
 def brackets(s):
+    'The function below checks if parentheses are correctly closed'
+
     stack = []
     pushChar = '('
     popChar = ')'
@@ -57,38 +50,27 @@ def brackets(s):
                 stack.pop()
     return stack == []
 
-#   Takes a string and verifies if it is correctly written to be a rule :
-#       - All fact are caps
-#       - Equation
-#       - Parentheses are well formated
-#
-
-ops = {
- '!': [['(', '+', '|', '^', 'S'], ['(', 'L']],
- '^': [[')', 'L'], ['(', 'L']],
- '+': [[')', 'L'], ['(', 'L']],
- '|': [[')', 'L'], ['(', 'L']],
- '(': [['(', '!', '+', '|', '^', 'S'], ['(', 'L']],
- ')': [['L'], ['+', '|', '^', 'E']],
- 'L': [['(', '+', '|', '^', 'S', '!'], [')', '+', '|', '^', 'E']],
- }
-
 def rule_is_valid(line):
-    if not brackets(line):
-        print("a")
-        return False
-    print(line)
+    'Check if a rule is given a valid way'
+
+    ops = {
+            '!': [['(', '+', '|', '^', 'S'], ['(', 'L']],
+            '^': [[')', 'L'], ['(', 'L']],
+            '+': [[')', 'L'], ['(', 'L']],
+            '|': [[')', 'L'], ['(', 'L']],
+            '(': [['(', '!', '+', '|', '^', 'S'], ['(', 'L']],')': [['L'], ['+', '|', '^', 'E']],
+            'L': [['(', '+', '|', '^', 'S', '!'], [')', '+', '|', '^', 'E']],
+            }
     split = line.split("=>")
-    print(split)
     if len(split) != 2:
-        print("b")
         return False
     for part in split:
+        if not brackets(part):
+            return False
         i = 0
         l = len(part)
         if l < 1:
             return False
-            print(1)
         while i < l:
             if is_upper(part[i]):
                 if (i > 0):
@@ -114,21 +96,16 @@ def rule_is_valid(line):
                         return False
                 elif part[i + 1] not in ops[part[i]][1]:
                     return False
-            elif part[i] == '<' and i + 1 == l:
-                continue
-            else:
+            elif part[i] != '<' or i + 1 != l:
                 return False
             i += 1
     return True
 
-
-#
-#   Class storing information about rules, queries, and initial facts given in a string.
-#   For each one, uses the corresponding function, and checks if the format is correct.
-#   Keep in track th current line read in case an error occurs to display it.
-#
-
 class Inputs:
+    """Class storing information about rules, queries, and initial facts given in a string.
+        For each one, uses the corresponding function, and checks if the format is correct.
+        Keep in track th current line read in case an error occurs to display it."""
+
     def __init__(self):
         self.line = 0
         self.nodes = dict()
@@ -173,7 +150,22 @@ class Inputs:
                     + "Rules => Initial facts => Queries")
         elif not rule_is_valid(line):
             errors.parse(self.line, "Rule is not well formated")
-        return None
+        eq = line.split("=>")
+        if eq[0][-1] == '<':
+            eq[0] = eq[0][:-1]
+            equi = 1
+        else:
+            equi = 0
+        while equi > -1:
+            if len(eq[1]) == 1:
+                refDic = self.nodes
+            else:
+                refDic = self.multi_rules
+            opKey = rpn.shunting(rpn.get_input(eq[1 if equi == 0 else 0]))[-1][2]
+            if opKey not in refDic:
+                refDic[opKey] = []
+            refDic[opKey].append(rpn.shunting(rpn.get_input(eq[0 if equi == 0 else 1]))[-1][2])
+            equi -= 1
 
     def parsing(self, content):
         content = content.replace(" ", "")
@@ -191,4 +183,9 @@ class Inputs:
                 self.take_queries(line[1:])
             else:
                 self.take_rules(line)
-            print(line)
+        print("line : " + str(self.line))
+        print("nodes : " + str(self.nodes))
+        print("multi.rules : " + str(self.multi_rules))
+        print("entries : " + str(self.entries))
+        print("queries : " + str(self.queries))
+        print("current : " + str(self.current))

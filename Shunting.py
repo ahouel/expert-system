@@ -2,7 +2,6 @@
 
 from sys import argv as av
 from collections import namedtuple
-from pprint import pprint as pp
  
 OpInfo = namedtuple('OpInfo', 'prec assoc')
 L, R = 'Left Right'.split()
@@ -18,28 +17,12 @@ ops = {
  
 NUM, LPAREN, RPAREN = 'NUMBER ( )'.split()
  
-def fix_input(inp = None):
-    'Inputs an expression and adds space for the incoming split of get_input \
-    returns None if it\'s not well formated'
-
-    valids = ' \t'
-    c = 65
-    while c < 91:
-        valids += chr(c)
-        c += 1
-    for char in ops:
-        valids += char
-    print(valids)
-    for char in inp:
-        if not char in valids:
-            print('Expression not valid !')
-            return None
-
 def get_input(inp = None):
     'Inputs an expression and returns list of (TOKENTYPE, tokenvalue)'
-    
-#    if inp is not None:
-#        fix_input(inp)
+
+    inp = inp.replace(" ", "")
+    inp = inp.replace("\t", "")
+    inp = " ".join(inp)
     if inp is None:
         inp = input('expression: ')
     tokens = inp.strip().split()
@@ -47,8 +30,6 @@ def get_input(inp = None):
     for token in tokens:
         if token in ops:
             tokenvals.append((token, ops[token]))
-        #elif token in (LPAREN, RPAREN):
-        #    tokenvals.append((token, token))
         else:    
             tokenvals.append((NUM, token))
     return tokenvals
@@ -111,15 +92,15 @@ def shunting(tokenvals):
     return table
  
 if __name__ == '__main__':
-    infix = '3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3'
+    infix = 'L + E | R + ( H ^ F ) | B ^ A'
     if len(av) > 1:
         infix = av[1]
     print( 'For infix expression: %r\n' % infix )
     rp = shunting(get_input(infix))
     maxcolwidths = [len(max(x, key=len)) for x in zip(*rp)]
     row = rp[0]
-    # print( ' '.join('{cell:^{width}}'.format(width=width, cell=cell) for (width, cell) in zip(maxcolwidths, row)))
-    # for row in rp[1:]:
-    #    print( ' '.join('{cell:<{width}}'.format(width=width, cell=cell) for (width, cell) in zip(maxcolwidths, row)))
- 
+    print( ' '.join('{cell:^{width}}'.format(width=width, cell=cell) for (width, cell) in zip(maxcolwidths, row)))
+    for row in rp[1:]:
+        print( ' '.join('{cell:<{width}}'.format(width=width, cell=cell) for (width, cell) in zip(maxcolwidths, row)))
+
     print('\n The final output RPN is: %r' % rp[-1][2])
